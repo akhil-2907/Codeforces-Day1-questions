@@ -1,0 +1,161 @@
+#include<bits/stdc++.h>
+#define REP(i,n) for (int i = 1; i <= n; i++)
+#define mod 1000000007
+#define pb push_back
+#define ff first
+#define ss second
+#define ii pair<int,int>
+#define vi vector<int>
+#define vii vector<ii>
+#define lli long long int
+#define INF 1000000000
+#define endl '\n'
+using namespace std;
+set<int> ar[100001];
+int par[100001];
+int sub[100001];
+int level[100001];
+int LCA[22][100001];
+int res[100001];
+ 
+//--------Decompose Part-----------//
+int dfs1(int node , int p)
+{
+	int res = 1;
+	sub[node] = 1;
+	for(auto it=ar[node].begin(); it!= ar[node].end();it++)
+	if(*it != p)
+	res += dfs1(*it , node) , sub[node] = res;
+	
+	return res;
+}
+ 
+int dfs(int node , int p , int n)
+{
+	for(auto it=ar[node].begin();it!=ar[node].end();it++)
+	if(*it != p && sub[*it] > n/2)
+		return dfs(*it , node , n);
+	
+	return node;
+}
+ 
+void decompose(int node , int p ){
+	int idx = dfs(node , p , dfs1(node , p));
+	if(p == -1) p = idx;
+	par[idx] = p;
+	
+	for(auto it=ar[idx].begin(); it != ar[idx].end(); it++)
+		ar[*it].erase(idx) , decompose(*it , idx);
+	ar[idx].clear();
+}
+ 
+//---------- decompose ends here -----------//
+ 
+//----------LCA calculation starts here--------//
+ 
+void dfs0(int node , int p)
+{
+	for(auto it=ar[node].begin(); it != ar[node].end(); it++)
+	if(*it != p)
+	LCA[0][*it] = node , level[*it] = level[node]+1 , dfs0(*it , node);
+}
+void preProcess(int n)
+{
+	level[1] = 1;
+	LCA[0][1] = 1;
+	dfs0(1 , 1);
+ 
+	for(int j=1;j<=21;j++)
+		for(int i=1;i<=n;i++)
+			if(LCA[j-1][i] != 0)
+			LCA[j][i] = LCA[j-1][LCA[j-1][i]];
+}
+ 
+int lca(int a , int b)
+{
+	if(level[a] < level[b])
+		swap(a , b);
+		
+	int d = level[a] - level[b];
+	
+	while(d)
+	{
+		int jump = log2(d);
+		a = LCA[jump][a];
+		d -= 1<<jump;
+	}
+	
+	if(a == b)
+		return a;
+	
+	for(int j=20;j>=0;j--)
+		if(LCA[j][a] != 0 && LCA[j][a] != LCA[j][b])
+			a = LCA[j][a] , b = LCA[j][b];
+	
+	return LCA[0][a];
+}
+ 
+int dist(int a , int b)
+{
+	return level[a] + level[b] - 2*level[lca(a , b)];
+}
+ 
+//-------- LCA calculation ends here----------//
+ 
+//--------- update and query -------------//
+ 
+void update(int node , int p)
+{
+	while(1)
+	{
+//		cout<<"dist of "<<node<<" , "<<p<<" dist(a , b) = "<<dist(p , node)<<endl;
+		res[p] = min(res[p] , dist(p , node));
+		
+		if(par[p] == p)
+			break;
+		
+		p = par[p];
+	}
+}
+ 
+int query(int node)
+{
+	int p = node;
+	int ans = INF;
+	while(1)
+	{
+		ans = min(ans , res[p] + dist(node , p));
+		if(par[p] == p)
+			break;
+		
+		p = par[p];
+	}
+	
+	return ans;
+}
+int main()
+{
+	
+	int n , m ,x , y;
+	cin>>n>>m;
+	
+	REP(i , n-1)
+		cin>>x>>y , ar[x].insert(y) , ar[y].insert(x);
+	preProcess(n);
+	
+	decompose(1 , -1);
+	
+	
+	REP(i , n) res[i] = INF;
+	update(1 , 1);
+	
+	while(m--)
+	{
+		cin>>x>>y;
+		
+		if(x == 1)
+			update(y , y);
+		else
+			cout<<query(y)<<endl;
+	}
+}

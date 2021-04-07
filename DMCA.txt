@@ -1,0 +1,16 @@
+ude<bits/stdc++.h>
+using namespace  std;
+ 
+#define ll long long
+ 
+int main()
+{
+  ll n; cin>>n;
+  
+  if(n%9==0)
+  {
+    if(n) cout<<9<<endl;
+    else cout<<0<<endl;
+  }
+  else cout<<n%9<<endl;
+}

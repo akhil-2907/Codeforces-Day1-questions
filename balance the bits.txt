@@ -1,0 +1,65 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define ll long long
+ 
+int main()
+{
+    ll t; cin>>t;
+ 
+    while(t--)
+    {
+        ll one =0,zero =0;
+        bool flag = true;
+        ll n; cin>>n;
+        string a,b,c;  cin>>a;
+        map<char,ll>mp;
+        for( ll i=0;i<n;i++)
+        {
+            mp[a[i]]++;
+        }
+        if(a[0]=='0'||a[n-1]=='0') flag = false;
+        else if(mp['0']%2!=0||mp['1']%2!=0) flag = false;
+        else
+        {
+            ll ans = mp['1']/2;
+            for(ll i=0;i<n;i++)
+            {
+                if(a[i]=='1')
+                {
+                    one++;
+                    if(one<=ans)
+                    {
+                        b.push_back('(');
+                        c.push_back('(');
+                    }
+                    else
+                    {	
+                        b.push_back(')');
+                        c.push_back(')');
+                    }
+                }
+                else
+                {   zero++;
+                	if(zero&1)
+                	{
+                    	b.push_back('(');
+                    	c.push_back(')');
+                	}
+                	else
+                	{
+                		c.push_back('(');
+                    	b.push_back(')');
+                	}
+ 
+                }
+            }
+ 
+        }
+        if(flag)
+        {   cout<<"YES"<<endl;   
+            cout<<b<<endl;
+            cout<<c<<endl;
+        }
+        else cout<<"NO"<<endl;
+    }
+}

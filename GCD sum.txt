@@ -1,0 +1,43 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+#define ll long long
+
+ll gcd(ll a, ll b)
+{
+    if (b == 0)
+        return a;
+    return gcd(b, a % b);
+     
+}
+
+int main()
+{
+    ll t;  cin>>t;
+
+    while(t--)
+    {
+        ll x;  cin>>x;
+        ll sum =0;
+        ll n=x;
+        while(x>0)
+        {
+            sum+=x%10;
+            x/=10;
+        }
+        
+		//cout<<sum<<endl;
+        while(gcd(n,sum)==1)
+        {
+            n++;
+            sum =0;
+            x=n;
+        	while(x>0)
+        	{
+            	sum+=x%10;
+            	x/=10;
+        	}
+        }
+        cout<<n<<endl;
+    }
+}
